@@ -22,10 +22,10 @@ df["Mean_SI"] = df[['SI 1', 'SI 2', 'SI 3', 'SI 4']].mean(axis=1)
 
 def find_combinations(num, target):
     data = [1, 2, 3, 4, 5]
-    target = target * num
+    total = target * num
 
     combination_arr = [combination for combination in combinations_with_replacement(data, num) if
-                       sum(combination) == target]
+                       sum(combination) == total]
     combinations_index = rng.integers(0, len(combination_arr))
 
     permutation_arr = list(permutations(combination_arr[combinations_index]))
@@ -37,7 +37,7 @@ for row in df.itertuples():
     index = getattr(row, 'Index')
 
     mean_pi = df.at[index, 'Mean_PI']
-    mean_si = df.loc[index, 'Mean_SI']
+    mean_si = df.at[index, 'Mean_SI']
 
     range_array = np.arange(1, min(mean_pi, mean_si))
     if range_array.size == 0:
@@ -49,25 +49,32 @@ for row in df.itertuples():
         df = df.drop(index=index)
         continue
 
-    df.loc[index, 'Mean_CSR'] = mean_csr
+    df.at[index, 'Mean_CSR'] = mean_csr
     df.loc[index, ['CSR 1', 'CSR 2', 'CSR 3', 'CSR 4', 'CSR 5', 'CSR 6', 'CSR 7', 'CSR 8']] = find_combinations(8,
                                                                                                                 mean_csr)
 
-array = df["Mean_PI"]
-df["Mean_BL"] = np.around(array * 1.2, 1)
-df = df.drop(df[df['Mean_BL'] > 5].index)
+array = df["Mean_PI"] / df["Mean_SI"]
+mean_bl = np.round(array * 3, 1)
 
-for index, row in df.iterrows():
-    df.loc[index, ['BL 1', 'BL 2', 'BL 3', 'BL 4', 'BL 5']] = find_combinations(5, df.loc[index, 'Mean_BL'])
+for row in df.itertuples():
+    index = getattr(row, "Index")
+
+    df.at[index, "Mean_BL"] = mean_bl[index] if (mean_bl[index] * 10) % 2 == 0 else ((mean_bl[index] * 10) + 1) / 10
+
+    if df.at[index, "Mean_BL"] > 5:
+        df = df.drop(df[df['Mean_BL'] > 5].index)
+        continue
+
+    df.loc[index, ['BL 1', 'BL 2', 'BL 3', 'BL 4', 'BL 5']] = find_combinations(5, df.at[index, 'Mean_BL'])
 
 while not df.empty:
     for row in df.itertuples():
         index = getattr(row, 'Index')
 
-        df.loc[index, 'Center_CSR'] = df.loc[index, 'Mean_CSR'] - np.mean(df['Mean_CSR'])
-        df.loc[index, 'Center_PI'] = df.loc[index, 'Mean_PI'] - np.mean(df['Mean_PI'])
-        df.loc[index, 'Center_SI'] = df.loc[index, 'Mean_SI'] - np.mean(df['Mean_SI'])
-        df.loc[index, 'Center_BL'] = df.loc[index, 'Mean_BL'] - np.mean(df['Mean_BL'])
+        df.at[index, 'Center_CSR'] = df.at[index, 'Mean_CSR'] - np.mean(df['Mean_CSR'])
+        df.at[index, 'Center_PI'] = df.at[index, 'Mean_PI'] - np.mean(df['Mean_PI'])
+        df.at[index, 'Center_SI'] = df.at[index, 'Mean_SI'] - np.mean(df['Mean_SI'])
+        df.at[index, 'Center_BL'] = df.at[index, 'Mean_BL'] - np.mean(df['Mean_BL'])
 
     df['Interaction_CSR_PI'] = df['Center_CSR'] * df['Center_PI']
     df['Interaction_CSR_SI'] = df['Center_CSR'] * df['Center_SI']
