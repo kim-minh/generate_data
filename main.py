@@ -7,13 +7,12 @@ NUM_SAMPLES = 1000
 rng = np.random.default_rng()
 mean = rng.integers(1, 6, size=[NUM_SAMPLES, 10])
 
-df1 = pd.DataFrame(index=range(0, NUM_SAMPLES),
-                   columns=['CSR 1', 'CSR 2', 'CSR 3', 'CSR 4', 'CSR 5', 'CSR 6', 'CSR 7', 'CSR 8'])
-df2 = pd.DataFrame(index=range(0, NUM_SAMPLES), columns=['BL 1', 'BL 2', 'BL 3', 'BL 4', 'BL 5'])
+df = pd.DataFrame(index=range(0, NUM_SAMPLES),
+                  columns=['CSR 1', 'CSR 2', 'CSR 3', 'CSR 4', 'CSR 5', 'CSR 6', 'CSR 7', 'CSR 8'])
 
-df = df1.join(
+df = df.join(
     pd.DataFrame(mean, columns=['PI 1', 'PI 2', 'PI 3', 'PI 4', 'PI 5', 'PI 6', 'SI 1', 'SI 2', 'SI 3', 'SI 4']))
-df = df.join(df2)
+df = df.join(pd.DataFrame(index=range(0, NUM_SAMPLES), columns=['BL 1', 'BL 2', 'BL 3', 'BL 4', 'BL 5']))
 
 df["Mean_CSR"] = pd.Series(dtype='float64')
 df["Mean_PI"] = df[['PI 1', 'PI 2', 'PI 3', 'PI 4', 'PI 5', 'PI 6']].mean(axis=1)
@@ -87,6 +86,5 @@ for row in df.itertuples():
                    'CSR 5', 'CSR 6', 'CSR 7', 'CSR 8']] = find_combinations(8, df.at[index, 'Mean_CSR'])
     df.loc[index, ['BL 1', 'BL 2', 'BL 3', 'BL 4', 'BL 5']] = find_combinations(5, df.at[index, 'Mean_BL'])
 
-df.to_excel("data.xlsx", index=False)
-
 print(df)
+df.to_excel("data.xlsx", index=False)
