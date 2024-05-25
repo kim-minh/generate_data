@@ -50,8 +50,6 @@ for row in df.itertuples():
         continue
 
     df.at[index, 'Mean_CSR'] = mean_csr
-    df.loc[index, ['CSR 1', 'CSR 2', 'CSR 3', 'CSR 4', 'CSR 5', 'CSR 6', 'CSR 7', 'CSR 8']] = find_combinations(8,
-                                                                                                                mean_csr)
 
 array = df["Mean_PI"] / df["Mean_SI"]
 mean_bl = np.round(array * 3, 1)
@@ -64,8 +62,6 @@ for row in df.itertuples():
     if df.at[index, "Mean_BL"] > 5:
         df = df.drop(df[df['Mean_BL'] > 5].index)
         continue
-
-    df.loc[index, ['BL 1', 'BL 2', 'BL 3', 'BL 4', 'BL 5']] = find_combinations(5, df.at[index, 'Mean_BL'])
 
 while not df.empty:
     for row in df.itertuples():
@@ -84,6 +80,12 @@ while not df.empty:
             df[(df['Interaction_CSR_PI'] < 0) | (df['Interaction_CSR_SI'] < 0) | (df['Center_BL'] < -0.8)].index)
     else:
         break
+
+for row in df.itertuples():
+    index = getattr(row, 'Index')
+    df.loc[index, ['CSR 1', 'CSR 2', 'CSR 3', 'CSR 4',
+                   'CSR 5', 'CSR 6', 'CSR 7', 'CSR 8']] = find_combinations(8, df.at[index, 'Mean_CSR'])
+    df.loc[index, ['BL 1', 'BL 2', 'BL 3', 'BL 4', 'BL 5']] = find_combinations(5, df.at[index, 'Mean_BL'])
 
 df.to_excel("data.xlsx", index=False)
 
