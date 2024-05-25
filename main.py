@@ -33,8 +33,10 @@ def find_combinations(num, target):
     return np.array(permutation_arr[permutation_index])
 
 
-for index, row in df.iterrows():
-    mean_pi = df.loc[index, 'Mean_PI']
+for row in df.itertuples():
+    index = getattr(row, 'Index')
+
+    mean_pi = df.at[index, 'Mean_PI']
     mean_si = df.loc[index, 'Mean_SI']
 
     range_array = np.arange(1, min(mean_pi, mean_si))
@@ -59,7 +61,9 @@ for index, row in df.iterrows():
     df.loc[index, ['BL 1', 'BL 2', 'BL 3', 'BL 4', 'BL 5']] = find_combinations(5, df.loc[index, 'Mean_BL'])
 
 while not df.empty:
-    for index, row in df.iterrows():
+    for row in df.itertuples():
+        index = getattr(row, 'Index')
+
         df.loc[index, 'Center_CSR'] = df.loc[index, 'Mean_CSR'] - np.mean(df['Mean_CSR'])
         df.loc[index, 'Center_PI'] = df.loc[index, 'Mean_PI'] - np.mean(df['Mean_PI'])
         df.loc[index, 'Center_SI'] = df.loc[index, 'Mean_SI'] - np.mean(df['Mean_SI'])
