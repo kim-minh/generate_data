@@ -5,9 +5,9 @@ import pandas as pd
 NUM_SAMPLES = 1000
 
 rng = np.random.default_rng()
-mean = rng.integers(1, 6, size=[NUM_SAMPLES, 10])
+values = rng.integers(1, 6, size=[NUM_SAMPLES, 10])
 
-df = pd.DataFrame(mean, columns=['PI 1', 'PI 2', 'PI 3', 'PI 4', 'PI 5', 'PI 6', 'SI 1', 'SI 2', 'SI 3', 'SI 4'])
+df = pd.DataFrame(values, columns=['PI 1', 'PI 2', 'PI 3', 'PI 4', 'PI 5', 'PI 6', 'SI 1', 'SI 2', 'SI 3', 'SI 4'])
 df = pd.concat([df, pd.DataFrame(index=range(NUM_SAMPLES),
                                  columns=['CSR 1', 'CSR 2', 'CSR 3', 'CSR 4', 'CSR 5', 'CSR 6', 'CSR 7', 'CSR 8',
                                           'BL 1', 'BL 2', 'BL 3', 'BL 4', 'BL 5'])], axis=1)
